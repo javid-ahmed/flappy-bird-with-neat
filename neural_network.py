@@ -1,5 +1,6 @@
 from matrix import Matrix
 from typing import List
+import math
 
 
 class NeuralNetwork:
@@ -33,7 +34,11 @@ class NeuralNetwork:
         """
         hidden = self.weights_IH * \
             Matrix.column_matrix(input_array) + self.bias_IH
+        hidden = Matrix.map(hidden, self.sigmoid)
+
         output = self.weights_HO * hidden + self.bias_HO
+        output = Matrix.map(output, self.sigmoid)
+
         return Matrix.to_array(output)
 
     def crossover(self, nn, other_nn):
@@ -55,4 +60,6 @@ class NeuralNetwork:
         self.bias_IH = self.new_bias_IH
         self.bias_HO = self.new_bias_HO
 
-    # TODO: Write activation functions
+    @staticmethod
+    def sigmoid(x):
+        return 1 / (1 + math.exp(-x))
