@@ -206,6 +206,17 @@ class TestPhaseDif(unittest.TestCase):
 
         np.testing.assert_array_equal(expected.matrix, actual.matrix)
 
+    def test_given_matrix_when_mapping_elements_then_check_matrix_correct(self):
+        matrix = Matrix(2, 3, [0, 1, 2, 3, 4, 5])
+
+        def add_two(x):
+            return x + 2
+
+        actual = Matrix.map(matrix, add_two)
+        expected = Matrix(2, 3, [2, 3, 4, 5, 6, 7])
+
+        np.testing.assert_array_equal(expected.matrix, actual.matrix)
+
 
 if __name__ == '__main__':
     unittest.main()
