@@ -147,3 +147,7 @@ class Matrix:
                 elements.append(other_matrix_elements[i])
 
         return cls(matrix.matrix.shape[0], matrix.matrix.shape[1], elements)
+
+    @classmethod
+    def map(cls, matrix, map_function):
+        return cls(matrix.matrix.shape[0], matrix.matrix.shape[1], map_function(matrix.matrix))
