@@ -131,11 +131,19 @@ class Matrix:
         return cls(rows, cols, elements)
 
     @classmethod
-    def crossover(cls, matrix, other_matrix):
+    def crossover(cls, matrix, other_matrix, mutation_rate, low, high):
         matrix_elements = Matrix.to_array(matrix)
         other_matrix_elements = Matrix.to_array(other_matrix)
 
-        elements = [matrix_elements[i] if np.random.random(
-            1) < 0.5 else other_matrix_elements[i] for i in range(cls.no_of_elements(matrix))]
+        elements = []
+
+        for i in range(cls.no_of_elements(matrix)):
+            rng = np.random.uniform(0, 1)
+            if rng < mutation_rate:
+                elements.append(np.random.uniform(low, high))
+            elif rng < (0.5 + mutation_rate / 2):
+                elements.append(matrix_elements[i])
+            else:
+                elements.append(other_matrix_elements[i])
 
         return cls(matrix.matrix.shape[0], matrix.matrix.shape[1], elements)
