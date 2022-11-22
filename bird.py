@@ -31,14 +31,17 @@ class Bird:
     def reset(self):
         self.y = self.start_y
         self.velocity = 0
-        self.alive = True
         self.count = 0
+        self.alive = True
 
     def kill(self):
         self.alive = False
 
     def draw(self):
         pygame.draw.rect(self.screen, self.color, self.rect)
+
+    def jump(self):
+        self.velocity += self.LIFT
 
     def update(self, pipes):
         if self.alive:
@@ -88,13 +91,11 @@ class Bird:
             self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
             self.draw()
 
-    def jump(self):
-        self.velocity += self.LIFT
+    def crossover(self, parentA, parentB, mutation_rate):
+        self.nn.crossover(parentA.nn, parentB.nn, mutation_rate)
 
-    def reset(self):
-        self.y = self.start_y
-        self.velocity = 0
-        self.count = 0
+    def apply(self):
+        self.nn.apply()
 
     @property
     def fitness(self):
