@@ -150,4 +150,4 @@ class Matrix:
 
     @classmethod
     def map(cls, matrix, map_function):
-        return cls(matrix.matrix.shape[0], matrix.matrix.shape[1], map_function(matrix.matrix))
+        return cls(matrix.matrix.shape[0], matrix.matrix.shape[1], [map_function(x) for x in matrix.matrix])
