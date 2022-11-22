@@ -4,18 +4,17 @@ import math
 
 
 class NeuralNetwork:
-    def __init__(self, inputNodes, hiddenNodes, outputNodes, mutation_rate):
+    def __init__(self, inputNodes, hiddenNodes, outputNodes):
         self.inputNodes = inputNodes
         self.hiddenNodes = hiddenNodes
         self.outputNodes = outputNodes
-        self.mutation_rate = mutation_rate
 
         self.weights_range = [-1, 1]
         self.bias_range = [-0.5, 0.5]
 
         self.weights_IH = Matrix.random_matrix(
             self.hiddenNodes, self.inputNodes, self.weights_range[0], self.weights_range[1])
-        self.weights_OH = Matrix.random_matrix(
+        self.weights_HO = Matrix.random_matrix(
             self.outputNodes, self.hiddenNodes, self.weights_range[0], self.weights_range[1])
         self.bias_IH = Matrix.random_matrix(
             self.hiddenNodes, 1, self.bias_range[0], self.bias_range[1])
@@ -41,18 +40,18 @@ class NeuralNetwork:
 
         return Matrix.to_array(output)
 
-    def crossover(self, nn, other_nn):
+    def crossover(self, nn, other_nn, mutation_rate):
         self.new_weights_IH = Matrix.crossover(
-            nn.weights_IH, other_nn.weights_IH, self.mutation_rate, self.weights_range[0], self.weights_range[1])
+            nn.weights_IH, other_nn.weights_IH, mutation_rate, self.weights_range[0], self.weights_range[1])
 
         self.new_weights_HO = Matrix.crossover(
-            nn.weights_HO, other_nn.weights_HO, self.mutation_rate, self.weights_range[0], self.weights_range[1])
+            nn.weights_HO, other_nn.weights_HO, mutation_rate, self.weights_range[0], self.weights_range[1])
 
         self.new_bias_IH = Matrix.crossover(
-            nn.bias_IH, other_nn.bias_IH, self.mutation_rate, self.bias_range[0], self.bias_range[1])
+            nn.bias_IH, other_nn.bias_IH, mutation_rate, self.bias_range[0], self.bias_range[1])
 
         self.new_bias_HO = Matrix.crossover(
-            nn.bias_HO, other_nn.bias_HO, self.mutation_rate, self.bias_range[0], self.bias_range[1])
+            nn.bias_HO, other_nn.bias_HO, mutation_rate, self.bias_range[0], self.bias_range[1])
 
     def apply(self):
         self.weights_IH = self.new_weights_IH
