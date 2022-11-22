@@ -27,7 +27,7 @@ class App:
         pygame.display.set_caption("Flappy Bird using NEAT")
 
         self.pipes = []
-        self.pipe_spawnrate = 60
+        self.pipe_spawnrate = 75
 
     def create_population(self, population_size, x, y, width=40, height=40):
         self.birds = []
@@ -39,7 +39,7 @@ class App:
             self.birds.append(
                 Bird(self.bird_pos_x, self.bird_pos_y, self.bird_width, self.bird_height))
 
-        self.population = Population(self.birds)
+        self.population = Population(self.birds, 0.10)
 
     def display_stats(self):
         generation_text = self.FONT.render(
@@ -56,11 +56,6 @@ class App:
                 if event.type == QUIT:
                     pygame.quit()
                     sys.exit()
-                elif event.type == pygame.KEYDOWN:
-                    if event.key == K_SPACE:
-                        self.birds[0].jump()
-                    if event.key == K_t:
-                        self.population.update()
 
             # Game logic goes here
             self.display_surf.fill((0, 0, 0))
@@ -70,7 +65,7 @@ class App:
                 self.pipes = []
 
             if self.count % self.pipe_spawnrate == 0:
-                self.pipes.append(Pipe())
+                self.pipes.append(Pipe(spacing=220))
 
             for pipe in self.pipes:
                 if pipe.offscreen():
