@@ -5,8 +5,8 @@ from neural_network import NeuralNetwork
 
 
 class Bird:
-    GRAV = 0.8
-    LIFT = -16
+    GRAV = 1
+    LIFT = -20
 
     def __init__(self, x, y, width, height):
         self.screen = pygame.display.get_surface()
@@ -47,6 +47,10 @@ class Bird:
         if self.alive:
             self.count += 1
 
+            if self.y > self.screen_height - self.height or self.y < 0:
+                self.kill()
+                return
+
             nearest_pipe = Pipe.get_closest_pipe(pipes, self.x)
             if nearest_pipe == None:
                 output = self.nn.feedforward(
@@ -67,7 +71,7 @@ class Bird:
                             self.y / self.screen_height,
                             self.velocity / self.min_velocity,
                             nearest_pipe.top / self.screen_height,
-                            nearest_pipe.bottom / self.screen_width,
+                            nearest_pipe.bottom / self.screen_height,
                             nearest_pipe.x / self.screen_width
                         ])
 
@@ -75,18 +79,8 @@ class Bird:
                 self.jump()
 
             self.velocity += self.GRAV
+            self.velocity = max(self.velocity, self.min_velocity)
             self.y += self.velocity
-
-            if self.y + self.height > self.screen_height:
-                self.y = self.screen_height - self.height
-                self.velocity = 0
-
-            if self.y < 0:
-                self.y = 0
-                self.velocity = 0
-
-            if self.velocity <= self.min_velocity:
-                self.velocity = self.min_velocity
 
             self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
             self.draw()
