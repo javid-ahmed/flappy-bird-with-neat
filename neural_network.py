@@ -22,7 +22,7 @@ class NeuralNetwork:
             self.outputNodes, 1, self.bias_range[0], self.bias_range[1])
 
         self.new_weights_IH = Matrix(self.hiddenNodes, self.inputNodes, 0)
-        self.new_weights_OH = Matrix(self.outputNodes, self.hiddenNodes, 0)
+        self.new_weights_HO = Matrix(self.outputNodes, self.hiddenNodes, 0)
         self.new_bias_IH = Matrix(self.hiddenNodes, 1, 0)
         self.new_bias_HO = Matrix(self.outputNodes, 1, 0)
 
