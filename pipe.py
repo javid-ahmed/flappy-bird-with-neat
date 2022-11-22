@@ -7,11 +7,11 @@ class Pipe:
         self.screen = pygame.display.get_surface()
         self.spacing = spacing
         self.top = np.random.uniform(
-            self.screen.get_size()[1] / 6, (3/4) * self.screen.get_size()[1])
+            self.screen.get_size()[1] / 5, (3/4) * self.screen.get_size()[1])
         self.bottom = self.screen.get_size()[1] - (self.top + self.spacing)
         self.x = self.screen.get_size()[0]
         self.width = width
-        self.speed = 4
+        self.speed = 3.5
         self.rect_top = pygame.Rect(self.x, 0, self.width, self.top)
         self.rect_bot = pygame.Rect(
             self.x, self.top + self.spacing, self.width, self.bottom)
