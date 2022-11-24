@@ -8,6 +8,8 @@ from genetic_algorithm import Population
 from bird import Bird
 from pipe import Pipe
 
+# TODO: Enforce max speed for pipe and spawnrate
+
 
 class App:
     pygame.init()
@@ -24,10 +26,17 @@ class App:
         self.display_surf = pygame.display.set_mode(
             (self.screen_width, self.screen_height))
         self.display_surf.fill((0, 0, 0))
-        pygame.display.set_caption("Flappy Bird using NEAT")
+        pygame.display.set_caption("Flappy Bird using Neuroevolution")
 
         self.pipes = []
-        self.pipe_spawnrate = 75
+        self.pipe_start_spawnrate = 80.9
+        self.pipe_current_spawnrate = self.pipe_start_spawnrate
+        self.pipe_min_spawnrate = 40
+        self.pipe_acc_spawnrate = 0.1
+        self.pipe_start_speed = 3.5
+        self.pipe_current_speed = self.pipe_start_speed
+        self.pipe_max_speed = 10
+        self.pipe_acc_speed = 0.03
 
     def create_population(self, population_size, x, y, width=40, height=40):
         self.birds = []
@@ -39,16 +48,21 @@ class App:
             self.birds.append(
                 Bird(self.bird_pos_x, self.bird_pos_y, self.bird_width, self.bird_height))
 
-        self.population = Population(self.birds, 0.10)
+        self.population = Population(self.birds, 0.06)
+
+    def write_text(self, text, x, y):
+        text_to_write = self.FONT.render(text, False, (255, 255, 255))
+        self.display_surf.blit(text_to_write, (x, y))
 
     def display_stats(self):
-        generation_text = self.FONT.render(
-            f"Generation: {self.population.generation}", False, (255, 255, 255))
-        self.display_surf.blit(generation_text, (0, 0))
-
-        birds_alive_text = self.FONT.render(
-            f"Birds alive: {self.population.num_alive}", False, (255, 255, 255))
-        self.display_surf.blit(birds_alive_text, (0, 20))
+        self.write_text(f"Generation: {self.population.generation}", 0, 0)
+        self.write_text(f"Birds alive: {self.population.num_alive}", 0, 20)
+        try:
+            self.write_text(
+                f"Score: {self.population.best_member.score}", 0, 40)
+        except AttributeError:
+            self.write_text(
+                f"Score: 0", 0, 40)
 
     def run(self):
         while True:
@@ -63,9 +77,17 @@ class App:
             if self.population.num_alive == 0:
                 self.population.evaluate()
                 self.pipes = []
+                self.pipe_current_speed = self.pipe_start_speed
+                self.pipe_current_spawnrate = self.pipe_start_spawnrate
 
-            if self.count % self.pipe_spawnrate == 0:
-                self.pipes.append(Pipe(spacing=220))
+            if self.count % int(self.pipe_current_spawnrate) == 0:
+                self.pipes.append(
+                    Pipe(spacing=220, speed=self.pipe_current_speed))
+                self.pipe_current_speed = min(
+                    self.pipe_current_speed + self.pipe_acc_speed, self.pipe_max_speed)
+                self.pipe_current_spawnrate = max(
+                    self.pipe_current_spawnrate - self.pipe_acc_spawnrate, self.pipe_min_spawnrate)
+                self.count = 1
 
             for pipe in self.pipes:
                 if pipe.offscreen():
