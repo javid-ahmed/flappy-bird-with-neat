@@ -18,7 +18,7 @@ class Bird:
         self.velocity = 0
         self.min_velocity = -10
         self.alive = True
-        self.count = 0
+        self.score = 0
         self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
         self.color = (np.random.randint(0, 256), np.random.randint(
             0, 256), np.random.randint(0, 256))
@@ -31,7 +31,7 @@ class Bird:
     def reset(self):
         self.y = self.start_y
         self.velocity = 0
-        self.count = 0
+        self.score = 0
         self.alive = True
 
     def kill(self):
@@ -44,46 +44,43 @@ class Bird:
         self.velocity += self.LIFT
 
     def update(self, pipes):
-        if self.alive:
-            self.count += 1
+        if not self.alive:
+            return
 
-            if self.y > self.screen_height - self.height or self.y < 0:
+        if self.y > self.screen_height - self.height or self.y < 0:
+            self.kill()
+            return
+
+        inputs = [
+            self.y / self.screen_height,
+            self.velocity / self.min_velocity,
+            0,
+            0,
+            0
+        ]
+
+        nearest_pipe = Pipe.get_closest_pipe(pipes, self.x)
+        if nearest_pipe is not None:
+            if self.rect.colliderect(nearest_pipe.rect_top) or self.rect.colliderect(nearest_pipe.rect_bot):
                 self.kill()
                 return
-
-            nearest_pipe = Pipe.get_closest_pipe(pipes, self.x)
-            if nearest_pipe == None:
-                output = self.nn.feedforward(
-                    [
-                        self.y / self.screen_height,
-                        self.velocity / self.min_velocity,
-                        0,
-                        0,
-                        0
-                    ])
             else:
-                if self.rect.colliderect(nearest_pipe.rect_top) or self.rect.colliderect(nearest_pipe.rect_bot):
-                    self.kill()
-                    return
-                else:
-                    output = self.nn.feedforward(
-                        [
-                            self.y / self.screen_height,
-                            self.velocity / self.min_velocity,
-                            nearest_pipe.top / self.screen_height,
-                            nearest_pipe.bottom / self.screen_height,
-                            nearest_pipe.x / self.screen_width
-                        ])
+                inputs[2] = nearest_pipe.top / self.screen_height
+                inputs[3] = nearest_pipe.bottom / self.screen_height
+                inputs[4] = nearest_pipe.x / self.screen_width
 
-            if output[0] > output[1]:
-                self.jump()
+        output = self.nn.feedforward(inputs)
 
-            self.velocity += self.GRAV
-            self.velocity = max(self.velocity, self.min_velocity)
-            self.y += self.velocity
+        if output[0] > output[1]:
+            self.jump()
 
-            self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
-            self.draw()
+        self.velocity += self.GRAV
+        self.velocity = max(self.velocity, self.min_velocity)
+        self.y += self.velocity
+
+        self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
+        self.draw()
+        self.score += 1
 
     def crossover(self, parentA, parentB, mutation_rate):
         self.nn.crossover(parentA.nn, parentB.nn, mutation_rate)
@@ -93,4 +90,4 @@ class Bird:
 
     @property
     def fitness(self):
-        return (self.count)**2
+        return (self.score)**2
