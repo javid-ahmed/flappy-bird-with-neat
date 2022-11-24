@@ -12,6 +12,18 @@ class Population:
         self.max_fitness_history = []
 
     @property
+    def best_member(self):
+        best_member = None
+        best_fitness = 0
+
+        for member in self.population:
+            if member.fitness > best_fitness:
+                best_member = member
+                best_fitness = member.fitness
+
+        return best_member
+
+    @property
     def num_alive(self):
         count = 0
         for member in self.population:
