@@ -55,11 +55,3 @@ class Population:
         if (np.random.uniform(0, 1) < parent.fitness / self.max_fitness):
             return parent
         return None
-
-    def update(self):
-        self.population[self._num_alive-1].kill()
-
-# Initialise a population
-# When they're all dead, evaluate their fitnesses
-# Perform crossover and mutations
-# Reset the population with new genes
