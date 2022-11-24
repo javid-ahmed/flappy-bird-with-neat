@@ -3,15 +3,16 @@ import pygame
 
 
 class Pipe:
-    def __init__(self, width=50, spacing=200):
+    def __init__(self, width=50, spacing=200, speed=3.5):
         self.screen = pygame.display.get_surface()
         self.spacing = spacing
         self.top = np.random.uniform(
-            self.screen.get_size()[1] / 5, (3/4) * self.screen.get_size()[1])
+            (1/5) * (self.screen.get_size()[1] - self.spacing),
+            (4/5) * (self.screen.get_size()[1] - self.spacing))
         self.bottom = self.screen.get_size()[1] - (self.top + self.spacing)
         self.x = self.screen.get_size()[0]
         self.width = width
-        self.speed = 3.5
+        self.speed = speed
         self.rect_top = pygame.Rect(self.x, 0, self.width, self.top)
         self.rect_bot = pygame.Rect(
             self.x, self.top + self.spacing, self.width, self.bottom)
@@ -39,7 +40,7 @@ class Pipe:
         closest = None
 
         for pipe in pipes:
-            pipe_dist = pipe.x - bird_pos_x
+            pipe_dist = pipe.x + pipe.width - bird_pos_x
             if 0 < pipe_dist < dist:
                 dist = pipe_dist
                 closest = pipe
